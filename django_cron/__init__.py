@@ -3,7 +3,6 @@ from datetime import timedelta
 import traceback
 import time
 
-from django_cron.models import CronJobLog
 from django.conf import settings
 from django.utils.timezone import now as utc_now, localtime, is_naive
 from django.db.models import Q
@@ -61,6 +60,7 @@ class CronJobBase(object):
 
     @classmethod
     def get_time_until_run(cls):
+        from django_cron.models import CronJobLog
         try:
             last_job = CronJobLog.objects.filter(
                 code=cls.code).latest('start_time')
@@ -87,6 +87,7 @@ class CronJobManager(object):
         self.previously_ran_successful_cron = None
 
     def should_run_now(self, force=False):
+        from django_cron.models import CronJobLog
         cron_job = self.cron_job
         """
         Returns a boolean determining whether this cron should run now or not!
@@ -178,6 +179,7 @@ class CronJobManager(object):
                 return self.make_log_msg(msg)
 
     def __enter__(self):
+        from django_cron.models import CronJobLog
         self.cron_log = CronJobLog(start_time=get_current_time())
 
         return self
